@@ -126,23 +126,93 @@ var GLOBAL_PromptArray = []
 var GLOBAL_GroundLine = 900
 var GLOBAL_UserTextNode = new TextNOwOde("", ctx.canvas.width / 2 , GLOBAL_GroundLine + 100, 0, 25, 100, "72px Calibri", 29, "rgba(255,192,0,0.25)","rgba(255,192,0,1)")
 
-var GLOBAL_Diff = new TextNOwOde("0", ctx.width / 2 , GLOBAL_GroundLine, 0, 0, 100, "20px Calibri", 1) //0~15, each 1min30sec
+var GLOBAL_Diff = 0 //0~15, each 1min30sec
 var GLOBAL_Score = 0
+var GLOBAL_Goal = 100
 var GLOBAL_HP = 50 //each character is 1HP
-var GLOBAL_Hourglass = new hOwOrglass(100, 50, 0)
+var GLOBAL_Hourglass = new hOwOrglass(500, 1500, 0)
+
+var GLOBAL_Pocket_TimeAdd = 0
+var GLOBAL_Pocket_NodeSlow = 0
+
+
+const GLOBAL_Dictionary_Response = await fetch("./Dictionary-main.txt")
+const GLOBAL_Dictionaey_WholeString = (await GLOBAL_Dictionary_Response.text()).split(/\r?\n/)
+var GLOBAL_Dictionary_Main = [ [],[],[],[], [],[],[],[], [],[],[],[], [],[],[],[] ]
+for(let i = 0 ; i < GLOBAL_Dictionaey_WholeString.length ; i++)
+{
+    let temp_currentString = GLOBAL_Dictionaey_WholeString[i] 
+    let temp_currentStringLength = temp_currentString.length
+
+    if (0 < temp_currentStringLength && temp_currentStringLength < 16)
+    {
+        GLOBAL_Dictionary_Main[ temp_currentStringLength - 1 ].push( temp_currentString )
+    }
+    else
+    {
+        GLOBAL_Dictionary_Main[10].push( temp_currentString )
+    }
+}
+console.log(GLOBAL_Dictionary_Main)
+
 
 var GLOBAL_Dictionary = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","t","s","u","v","w","x","y","z"]
 
+/*
+
+level 0 : 1 & 2 
+level 1 : 2 & 3
+level 2 : 3 & 4 & 5
+level 3 : 4 & 5 & 6
+level 4 : 5 & 6
+level 5 : 7 & 8
+level 6 : 9 & 10
+level 7 : memes
+
+*/
 
 
 
 
 // ---- ---- ---- ---- page function
 
+function POwO_Dictionary_GeneratePrompt()
+{
+    //base pm the current difficulty, which word list should we choose from the dictionary ?
+    let temp_Table_fromDiffToIndex = 
+    [
+        [0,1,1,2,2,2],
+        [2,2,3,3,3,4,4],
+        [4,4,5,5,5,6,6],
+        [4,5,5,5,6,6,6,7,8],
+
+        [5,5,6,6,6,7,7,7,8,9,10],
+        [5,5,6,6,6,7,7,7,8,8,9,10,11,12],
+        [5,5,6,6,6,7,7,7,8,8,8,9,9,10,11,12,13,14],
+        [15]
+    ]
+
+    let temp_GrabIndex = temp_Table_fromDiffToIndex[ GLOBAL_Diff ][ Math.floor(Math.random() * temp_Table_fromDiffToIndex[GLOBAL_Diff].length) ]
+
+    return GLOBAL_Dictionary_Main[ temp_GrabIndex ][ Math.floor(Math.random() * GLOBAL_Dictionary_Main[ temp_GrabIndex ].length) ]
+}
+
 
 function POwO_RedrawAll()
 {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    //draw status
+    let temp_StatusTag_X = 50
+    let temp_StatusTag_Y = 50
+    ctx.font = "30px Calibri"
+    ctx.textAlign = "left"
+    ctx.textBaseline = "middle"
+    ctx.fillStyle = "#ffffff"
+    ctx.fillText("🚀 : " + GLOBAL_Score.toString() + "/" + GLOBAL_Goal.toString(), temp_StatusTag_X, temp_StatusTag_Y * 1)
+    ctx.fillText("❤ : " + GLOBAL_HP.toString(), temp_StatusTag_X, temp_StatusTag_Y * 2)
+    ctx.fillText("⏳ : " + GLOBAL_Pocket_TimeAdd.toString(), temp_StatusTag_X, temp_StatusTag_Y * 3)
+    ctx.fillText("🐌 : " + GLOBAL_Pocket_NodeSlow.toString(), temp_StatusTag_X, temp_StatusTag_Y * 4)
 
     //draw all prompts
     for(let i = 0 ; i < GLOBAL_PromptArray.length ; i++)
@@ -162,6 +232,8 @@ function POwO_RedrawAll()
     //draw player text
     GLOBAL_UserTextNode.drawMe()
 }
+
+
 
 window.addEventListener("message",(event) => {
     
@@ -184,18 +256,10 @@ window.addEventListener("keydown",(event) => {
                 GLOBAL_Score += temp_userText.length
 
                 //effects ?
-                if (temp_currentNode.effect === )
-                {
-                    
-                }
-                else if (temp_currentNode.effect === "❤")
-                {
-
-                }
-
                 switch (temp_currentNode.effect) {
                     case "❤" : GLOBAL_HP += temp_currentNode.text.length ; break ;
-                    case 
+                    case "⏳" : GLOBAL_Pocket_TimeAdd ++ ; break;
+                    case "🐌" : GLOBAL_Pocket_NodeSlow ++ ; break ;
                     default : break ;
                 }
 
@@ -211,7 +275,7 @@ window.addEventListener("keydown",(event) => {
     {
         GLOBAL_UserTextNode.text = GLOBAL_UserTextNode.text.slice(0,-1)
     }
-    else if (event.key === "Shift")
+    else if (event.key === "Shift" || event.key === "Control")
     {
         //ignore
     }
@@ -248,7 +312,7 @@ setInterval(()=>{
         (
             new TextNOwOde
             (
-                GLOBAL_Dictionary[ Math.floor(POWO_Math_Lerp(0, GLOBAL_Dictionary.length, Math.random())) ],
+                POwO_Dictionary_GeneratePrompt(),
                 Math.random() * ctx.canvas.width,
                 0,
                 Math.random(), //drop velocity
