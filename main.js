@@ -45,7 +45,7 @@ function POwO_Math_IsInRange_Exclusive(inMin, inVal, inMax)
 
 class TextNOwOde
 {
-    constructor(inText, inPosX, inPosY, inVel, inWidthMargin, inHeight, inFont, inFontToWidthRatio, inFillColor, inTextColor)
+    constructor(inText, inPosX, inPosY, inVel, inWidthMargin, inHeight, inFont, inFontToWidthRatio, inFillColor, inTextColor, inEffect)
     {
         this.text = inText
         this.posX = inPosX
@@ -62,6 +62,7 @@ class TextNOwOde
         this.colorFill = inFillColor
         this.colorText = inTextColor
 
+        this.effect = inEffect //❤ = HP add, ⏳ = time add duration, 🐌 = slow nodes
     }
 
     updateW()
@@ -168,10 +169,42 @@ window.addEventListener("message",(event) => {
 
 
 window.addEventListener("keydown",(event) => {
+
     if (event.key === "Enter")
     {
-        //check evrything
-        //but for now, clear
+        let temp_userText = GLOBAL_UserTextNode.text
+
+        for(let i = GLOBAL_PromptArray.length - 1 ; 0 <= i ; i--)
+        {
+            if (GLOBAL_PromptArray[i].text === temp_userText)
+            {
+                let temp_currentNode = GLOBAL_PromptArray[i]
+
+                //add score
+                GLOBAL_Score += temp_userText.length
+
+                //effects ?
+                if (temp_currentNode.effect === )
+                {
+                    
+                }
+                else if (temp_currentNode.effect === "❤")
+                {
+
+                }
+
+                switch (temp_currentNode.effect) {
+                    case "❤" : GLOBAL_HP += temp_currentNode.text.length ; break ;
+                    case 
+                    default : break ;
+                }
+
+                //delete node
+                GLOBAL_PromptArray.splice(i,1)
+            }
+        }
+
+
         GLOBAL_UserTextNode.text = ""
     }
     else if (event.key === "Backspace")
