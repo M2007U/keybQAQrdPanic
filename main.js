@@ -84,6 +84,9 @@ class TextNOwOde
     drawMe ()
     {
         this.updateW();
+        ctx.lineWidth = 0
+        ctx.strokeWidth = 0
+        ctx.setLineDash([])
 
         //first the tag
         ctx.beginPath()
@@ -129,20 +132,20 @@ const ctx = canvas.getContext("2d");
 const HTML_Body = POwO_docgetel("HTML_body")
 
 var GLOBAL_PromptArray = []
-var GLOBAL_GroundLine = 900
-var GLOBAL_UserTextNode = new TextNOwOde("", ctx.canvas.width / 2 , GLOBAL_GroundLine + 100, 0, 25, 100, "72px Calibri", 29, "rgba(255,192,0,0.25)","rgba(255,192,0,1)","")
+var GLOBAL_GroundLine = 800
+var GLOBAL_UserTextNode = new TextNOwOde("", ctx.canvas.width / 2 , GLOBAL_GroundLine + 100, 0, 25, 100, "72px Consolas", 40, "rgba(255,192,0,0.25)","rgba(255,192,0,1)","")
 var GLOBAL_canvasWidthMargin = 200
 
-var GLOBAL_gameState = "pause"
+var GLOBAL_gameState = "stand by"
 var GLOBAL_Diff = 0 //0~15, each 1min30sec
 var GLOBAL_Score = 0
-var GLOBAL_Goal = 100
+var GLOBAL_Goal = [ 50, 75, 100, 100, 125, 125, 150, 200 ]
 var GLOBAL_HP = 50 //each character is 1HP
-var GLOBAL_Hourglass = new hOwOrglass(750, 1000, 0)
+var GLOBAL_Hourglass = new hOwOrglass(1000, 3000, 0)
 
 var GLOBAL_Pocket_TimeAdd = 0
 var GLOBAL_Pocket_NodeSlow = 0
-
+var GLOBAL_Pocket_NodeBomb = 0
 
 const GLOBAL_Dictionary_Response = await fetch("./Dictionary-main.txt")
 const GLOBAL_Dictionary_WholeString = (await GLOBAL_Dictionary_Response.text()).split(/\r?\n/)
@@ -188,7 +191,7 @@ function POwO_Dictionary_GeneratePrompt()
     //wordQuantityDistribution : how many words for this wave ? = q
     let temp_Table_fromDiffToIndex = 
     [
-        {l : [0,1,1,2,2,2],                                 q : [3,4,5,6]},
+        {l : [0,1,1,2,2,2],                                 q : [3,4,5]},
         {l : [2,2,3,3,3,4,4],                               q : [3,4,5,5]},
         {l : [4,4,5,5,5,6,6],                               q : [3,4,4,5]},
         {l : [4,5,5,5,6,6,6,7,8],                           q : [3,4,5]},
@@ -200,13 +203,11 @@ function POwO_Dictionary_GeneratePrompt()
     ]
 
     let temp_currentSelectedObject = temp_Table_fromDiffToIndex[ GLOBAL_Diff ]
-    let temp_selected_diffIndex = POwO_JS_ArrayRandomPickOne(temp_currentSelectedObject.l)
     let temp_selected_wordQuantity = POwO_JS_ArrayRandomPickOne(temp_currentSelectedObject.q)
-
     let temp_returnString = ""
-
     for(let i = 0 ; i < temp_selected_wordQuantity ; i++)
     {
+        let temp_selected_diffIndex = POwO_JS_ArrayRandomPickOne(temp_currentSelectedObject.l) //decide world length
         temp_returnString += POwO_JS_ArrayRandomPickOne(GLOBAL_Dictionary_Main[ temp_selected_diffIndex ])
         if (i < temp_selected_wordQuantity - 1){temp_returnString += " "}
     }
@@ -220,41 +221,77 @@ function POwO_RedrawAll()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     //draw status
-    let temp_StatusTag_X = 50
-    let temp_StatusTag_Y = 50
-    ctx.font = "30px Calibri"
+    let temp_StatusTag_Y = 40
+    ctx.font = "25px Consolas"
     ctx.textAlign = "left"
     ctx.textBaseline = "middle"
     ctx.fillStyle = "#ffffff"
-    ctx.fillText("🚀 : " + GLOBAL_Score.toString() + "/" + GLOBAL_Goal.toString() + " , " + GLOBAL_Diff.toString() + "/15", temp_StatusTag_X, temp_StatusTag_Y * 1)
-    ctx.fillText("❤ : " + GLOBAL_HP.toString(), temp_StatusTag_X, temp_StatusTag_Y * 2)
-    ctx.fillText("⏳ : " + GLOBAL_Pocket_TimeAdd.toString(), temp_StatusTag_X, temp_StatusTag_Y * 3)
-    ctx.fillText("🐌 : " + GLOBAL_Pocket_NodeSlow.toString(), temp_StatusTag_X, temp_StatusTag_Y * 4)
-
-    if (GLOBAL_gameState === "pause")
+    let temp_StatusTag_items_Left = 
+    [
+        "⏱️ : " + Math.floor(GLOBAL_Hourglass.cur) ,
+        "🚀 : " + GLOBAL_Score.toString() + "/" + GLOBAL_Goal[Math.min(GLOBAL_Diff,7)].toString() + " , " + GLOBAL_Diff.toString() + "/8",
+        "❤  : " + GLOBAL_HP.toString()
+    ]
+    for(let i = temp_StatusTag_items_Left.length-1 ; 0 <= i ; i--)
     {
-        ctx.font = "100px Calibri"
-        ctx.textAlign = "center"
-        ctx.fillStyle = "rgba(255,255,255,0.25)"
-        ctx.fillText("PAUSED" , canvas.width / 2 , canvas.height / 2)
+        ctx.fillText(temp_StatusTag_items_Left[i], 50, GLOBAL_GroundLine + 50 + temp_StatusTag_Y * i)
     }
+    let temp_StatusTag_items_Right =
+    [
+        "⏳ : " + GLOBAL_Pocket_TimeAdd.toString() + " </ht>",
+        "🐌 : " + GLOBAL_Pocket_NodeSlow.toString() + " </hs>",
+        "💥 : " + GLOBAL_Pocket_NodeBomb.toString() + " </hb>"
+    ]
+    for(let i = temp_StatusTag_items_Right.length-1 ; 0 <= i ; i--)
+    {
+        ctx.fillText(temp_StatusTag_items_Right[i], ctx.canvas.width - 200, GLOBAL_GroundLine + 50 + temp_StatusTag_Y * i)
+    }
+    
 
-    //draw all prompts
+    //draw game states
+    ctx.font = "250px Consolas"
+    ctx.textAlign = "center"
+    ctx.fillStyle = "rgba(255,255,255,0.125)"
+    let temp_stateText = ""
+    switch (GLOBAL_gameState)
+    {
+        case "pause" : temp_stateText = "PAUSED" ; break ;
+        case "player win" : temp_stateText = "\\(OwO)/" ; break ;
+        case "player lose" : temp_stateText = "(QAQ)" ; break ;
+        case "stand by" : temp_stateText = "</play>" ; break ;
+        default: break;
+    }
+    ctx.fillText(temp_stateText , ctx.canvas.width / 2 , 450)
+
+    //draw all prompts and potential matches
     for(let i = 0 ; i < GLOBAL_PromptArray.length ; i++)
     {
+        let temp_currentTextNode = GLOBAL_PromptArray[i]
+        if (temp_currentTextNode.text === GLOBAL_UserTextNode.text)
+        {
+            ctx.beginPath()
+            ctx.setLineDash([10,10])
+            ctx.lineWidth =  2
+            ctx.moveTo(temp_currentTextNode.posX , temp_currentTextNode.posY)
+            ctx.lineTo(GLOBAL_UserTextNode.posX , GLOBAL_UserTextNode.posY)
+            ctx.strokeStyle = "#FFC000"
+            ctx.stroke()
+        }
+
         GLOBAL_PromptArray[i].drawMe()
     }
 
     //draw the ground line
     ctx.beginPath()
     ctx.setLineDash([10,10])
+    ctx.lineWidth =  2
     ctx.moveTo(0, GLOBAL_GroundLine)
     ctx.lineTo(1920, GLOBAL_GroundLine)
     ctx.strokeStyle = "#FF0000"
-    ctx.lineWidth =  2
     ctx.stroke()
 
     //draw player text
+    ctx.setLineDash([])
     GLOBAL_UserTextNode.drawMe()
 }
 
@@ -274,15 +311,19 @@ function POwO_Interval_Tick()
     {
         GLOBAL_PromptArray[i].move()
 
+        //when it hits the ground
         if (GLOBAL_PromptArray[i].posY > GLOBAL_GroundLine)
         {
             GLOBAL_HP -= GLOBAL_PromptArray[i].text.length
             GLOBAL_PromptArray.splice(i,1)
             
+            //if damage too much
             if (GLOBAL_HP < 0)
             {
                 console.log("player lose")
+                GLOBAL_gameState = "player lose"
                 clearInterval(GLOBAL_Interval_Run)
+                POwO_RedrawAll()
             }
         }
     }
@@ -310,16 +351,17 @@ function POwO_Interval_Tick()
             }
 
             let temp_makeNode_vel = 0;
-            if (1 <= temp_makeNode_text.length && temp_makeNode_text.length <= 4){temp_makeNode_vel = 1;}
-            else if (5 <= temp_makeNode_text.length && temp_makeNode_text.length <= 10){temp_makeNode_vel = 0.5;}
-            else if (11 <= temp_makeNode_text.length){temp_makeNode_vel = 0.25;}
+            if (1 <= temp_makeNode_text.length && temp_makeNode_text.length <= 4){temp_makeNode_vel = 0.4;}
+            else if (5 <= temp_makeNode_text.length && temp_makeNode_text.length <= 10){temp_makeNode_vel = 0.2;}
+            else if (11 <= temp_makeNode_text.length){temp_makeNode_vel = 0.1;}
 
-            let temp_makeNode_effect_pool = ["","","","","","","","","","❤","⏳","🐌"] //❤ = HP add, ⏳ = time add duration, 🐌 = slow nodes
-            let temp_makeNode_effect = temp_makeNode_effect_pool[ Math.floor( Math.random() * temp_makeNode_effect_pool.length ) ]
+            let temp_makeNode_effect_pool = ["","","","","","","","","","","","","","❤","⏳","🐌","💥"]
+            //❤ = HP add, ⏳ = time add duration, 🐌 = slow nodes, 💥 = destroy 5 nodes
+            let temp_makeNode_effect = POwO_JS_ArrayRandomPickOne(temp_makeNode_effect_pool)
             
             let temp_makeNode_fillColor = "rgba(32,32,32,0.5)"
             let temp_makeNode_textColor = "rgba(255,255,255,1)"
-            if (temp_makeNode_effect.length > 1)
+            if (temp_makeNode_effect.length > 0)
             {
                 temp_makeNode_fillColor = "rgba(0,255,128,0.5)"
                 temp_makeNode_textColor = "rgba(0,192,64,1)"
@@ -331,11 +373,11 @@ function POwO_Interval_Tick()
                 (
                     temp_makeNode_text, //inText
                     temp_makeNode_PosX, //inPosX
-                    0 , //inPosY
+                    0 - Math.random() * 100 , //inPosY
                     temp_makeNode_vel, //inVel
                     50, //widthMargin
                     80, //height
-                    "50px Calibri", //inFont
+                    "50px Consolas", //inFont
                     12, //inFontToWidthRatio
                     temp_makeNode_fillColor, //inFillColor
                     temp_makeNode_textColor, //inTextColor
@@ -354,8 +396,9 @@ window.addEventListener("message",(event) => {
 
 window.addEventListener("keydown",(event) => {
 
-    if (event.key === "Enter")
+    if (event.key === "Enter" || event.key === " ")
     {
+        event.preventDefault();
         let temp_userText = GLOBAL_UserTextNode.text
 
         if (temp_userText.at(0) === '/')
@@ -363,10 +406,52 @@ window.addEventListener("keydown",(event) => {
             //it is a special command
             switch (temp_userText)
             {
-                case "/play" : GLOBAL_Interval_Run = setInterval(()=>{ POwO_Interval_Tick() },1) ; GLOBAL_gameState = "play" ; break ;
-                case "/pause" : clearInterval(GLOBAL_Interval_Run) ; GLOBAL_gameState = "pause" ; POwO_RedrawAll() ; break ;
-                case "/pwrt" : if (GLOBAL_Pocket_TimeAdd > 0){ GLOBAL_Hourglass.cur += 1000 ; GLOBAL_Pocket_TimeAdd -- } ; break ;
-                case "/pwrs" : if (GLOBAL_Pocket_NodeSlow > 0){ for(let i = 0 ; i < GLOBAL_PromptArray.length ; i++){ GLOBAL_PromptArray[i].vel /= 2 } ; GLOBAL_Pocket_NodeSlow -- } ; break ;
+                case "/play" :
+                    if (GLOBAL_gameState !== "play")
+                    {
+                        GLOBAL_Interval_Run = setInterval(()=>{ POwO_Interval_Tick() },1) ;
+                        GLOBAL_gameState = "play" ;
+                    }
+                break ;
+                case "/pause" :
+                    if (GLOBAL_gameState === "play")
+                    {
+                        clearInterval(GLOBAL_Interval_Run) ;
+                        GLOBAL_gameState = "pause" ;
+                        POwO_RedrawAll() ;
+                    }
+                break ;
+                case "/ht" :
+                    if (GLOBAL_Pocket_TimeAdd > 0)
+                    {
+                        GLOBAL_Hourglass.cur += 1000 ;
+                        GLOBAL_Pocket_TimeAdd --
+                    }
+                break ;
+                case "/hs" :
+                    if (GLOBAL_Pocket_NodeSlow > 0)
+                    {
+                        for(let i = 0 ; i < GLOBAL_PromptArray.length ; i++)
+                        {
+                            GLOBAL_PromptArray[i].vel /= 2
+                        }
+                        GLOBAL_Pocket_NodeSlow --
+                    }
+                break ;
+                case "/hb" :
+                    if (GLOBAL_Pocket_NodeBomb > 0)
+                    {
+                        GLOBAL_PromptArray.sort((a,b)=>{a.posY-b.posY}) ;
+                        for(let i = 0 ; i < 5 ; i++)
+                        {
+                            if (GLOBAL_PromptArray.length > 0)
+                            {
+                                GLOBAL_PromptArray.shift()
+                            }
+                        }
+                    }
+                    GLOBAL_Pocket_NodeBomb --
+                break;
             
                 default: break ;
             }
@@ -374,6 +459,8 @@ window.addEventListener("keydown",(event) => {
         else if (GLOBAL_gameState === "play")
         {
             //just normal typing
+
+            //go through all the texts and see if any of them matches
             for(let i = GLOBAL_PromptArray.length - 1 ; 0 <= i ; i--)
             {
                 if (GLOBAL_PromptArray[i].text === temp_userText)
@@ -382,16 +469,18 @@ window.addEventListener("keydown",(event) => {
 
                     //add score
                     GLOBAL_Score += temp_userText.length
-                    while (GLOBAL_Score > GLOBAL_Goal)
+                    while (GLOBAL_Score > GLOBAL_Goal[GLOBAL_Diff])
                     {
-                        GLOBAL_Score -= GLOBAL_Goal
+                        GLOBAL_Score -= GLOBAL_Goal[GLOBAL_Diff]
                         GLOBAL_Diff++
                     }
 
-                    if (GLOBAL_Diff > 15)
+                    if (GLOBAL_Diff >= 8)
                     {
                         console.log("player win")
+                        GLOBAL_gameState = "player win"
                         clearInterval(GLOBAL_Interval_Run)
+                        POwO_RedrawAll()
                     }
 
                     //effects ?
@@ -399,6 +488,7 @@ window.addEventListener("keydown",(event) => {
                         case "❤" : GLOBAL_HP += temp_currentNode.text.length ; break ;
                         case "⏳" : GLOBAL_Pocket_TimeAdd ++ ; break;
                         case "🐌" : GLOBAL_Pocket_NodeSlow ++ ; break ;
+                        case "💥" : GLOBAL_Pocket_NodeBomb ++ ; break ;
                         default : break ;
                     }
 
@@ -428,7 +518,7 @@ window.addEventListener("keydown",(event) => {
         
     }
 
-    if (GLOBAL_gameState === "pause"){POwO_RedrawAll()}
+    if (GLOBAL_gameState === "pause" || GLOBAL_gameState === "stand by"){POwO_RedrawAll()}
 })
 
 var GLOBAL_Interval_Run = 0
