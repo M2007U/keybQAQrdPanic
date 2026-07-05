@@ -97,6 +97,7 @@ fox
 fur
 gas
 get
+gum
 gun
 hat
 hen
@@ -173,6 +174,7 @@ say
 sea
 see
 set
+shy
 sip
 sir
 sit
@@ -220,6 +222,7 @@ ball
 band
 bank
 bark
+base
 bass
 bata
 bath
@@ -258,6 +261,7 @@ cant
 card
 care
 cart
+case
 cell
 cite
 city
@@ -292,6 +296,7 @@ dirt
 disc
 disk
 doll
+done
 dont
 door
 dove
@@ -331,6 +336,7 @@ flat
 flea
 flow
 fold
+folk
 food
 fork
 form
@@ -401,6 +407,7 @@ keen
 keep
 kelp
 kill
+kind
 king
 kite
 kiwi
@@ -472,6 +479,7 @@ name
 need
 neko
 news
+nice
 nine
 node
 nona
@@ -509,6 +517,7 @@ poll
 pond
 pony
 pool
+poor
 port
 post
 pray
@@ -529,6 +538,7 @@ read
 real
 rent
 rice
+rich
 ripe
 rise
 road
@@ -609,6 +619,7 @@ tick
 tide
 tied
 tile
+time
 tint
 tiny
 tire
@@ -625,11 +636,14 @@ tube
 tuna
 tune
 turn
+type
 unit
 urge
+user
 vain
 vary
 verb
+very
 view
 void
 wait
@@ -749,9 +763,11 @@ chart
 chase
 check
 cheek
+chest
 chick
 child
 chili
+chill
 choke
 chord
 class
@@ -818,6 +834,7 @@ fetch
 field
 fight
 final
+first
 flake
 flase
 flash
@@ -856,12 +873,15 @@ group
 grows
 guard
 guava
+guess
+guest
 guiro
 happy
 harsh
 hatch
 havoc
 heart
+heavy
 hedge
 hello
 hepta
@@ -871,10 +891,12 @@ horse
 house
 human
 hyena
+image
 index
 input
 inset
 intty
+issue
 jelly
 juice
 knife
@@ -989,6 +1011,7 @@ quick
 quiet
 quote
 radii
+radio
 raise
 ranch
 range
@@ -996,6 +1019,7 @@ raven
 reach
 react
 ready
+relax
 repel
 reply
 ridge
@@ -1004,6 +1028,7 @@ river
 rough
 round
 ruler
+saber
 salad
 sauce
 scale
@@ -1027,6 +1052,7 @@ short
 shout
 sight
 signs
+silly
 since
 skill
 slate
@@ -1038,6 +1064,7 @@ small
 smart
 smell
 smile
+smoke
 snail
 snake
 sniff
@@ -1095,8 +1122,10 @@ tempt
 thank
 there
 these
+thick
 thing
 think
+third
 those
 three
 throw
@@ -1109,6 +1138,7 @@ torus
 touch
 towel
 tower
+trail
 train
 trash
 treat
@@ -1183,11 +1213,13 @@ anyone
 appear
 around
 arrive
+ascend
 astray
 attach
 attack
 attend
 autumn
+avatar
 azalea
 ballet
 banana
@@ -1203,6 +1235,7 @@ before
 behind
 belgia
 beside
+beyond
 bezier
 binary
 bitter
@@ -1222,6 +1255,7 @@ button
 cabage
 cabasa
 camera
+candle
 carbon
 carrot
 cattle
@@ -1305,6 +1339,7 @@ finish
 flavor
 flower
 fluent
+fluffy
 folder
 follow
 forest
@@ -1372,6 +1407,7 @@ matrix
 matter
 median
 medium
+meetup
 member
 middle
 miller
@@ -1424,6 +1460,7 @@ picnic
 pierce
 pigeon
 pillar
+pillow
 pistol
 planet
 plasma
@@ -1431,10 +1468,12 @@ pocket
 poison
 police
 polish
+portal
 posses
 potato
 powder
 preess
+prefab
 prefer
 pretty
 prison
@@ -1484,16 +1523,19 @@ season
 second
 secret
 seldom
+select
 serene
 serial
 series
 shield
 shorts
 should
+signal
 silent
 sister
 sleeve
 smooth
+social
 sodium
 source
 sphere
@@ -1519,6 +1561,7 @@ supply
 switch
 symbol
 system
+temple
 theory
 thirty
 ticket
@@ -1541,12 +1584,14 @@ vessel
 violet
 violin
 vision
+visual
 volume
 waffle
 walked
 walnut
 walrus
 wander
+weight
 window
 wombat
 wonder
@@ -1562,6 +1607,7 @@ algebra
 already
 amazing
 anemone
+animate
 anymore
 apology
 archive
@@ -1572,6 +1618,7 @@ astilbe
 attempt
 attract
 average
+awkward
 baggage
 balloon
 battery
@@ -1647,6 +1694,7 @@ deliver
 depress
 destroy
 develop
+diagram
 diamond
 diorite
 discuss
@@ -1697,6 +1745,7 @@ hexagon
 horizon
 hundred
 husband
+imagine
 incline
 include
 inflate
@@ -1713,6 +1762,7 @@ kinetic
 kitchen
 kouxian
 lampost
+lantern
 laundry
 leopard
 lettuce
@@ -1752,9 +1802,11 @@ panther
 passion
 peacock
 penguin
+perfect
 perform
 petunia
 physics
+picture
 plushie
 portant
 predict
@@ -1809,6 +1861,7 @@ servere
 shallot
 shekere
 silicon
+society
 soldier
 someone
 sparrow
@@ -1975,6 +2028,7 @@ nuisance
 original
 overflow
 parabola
+particle
 password
 peaceful
 pentagon
@@ -1984,6 +2038,7 @@ practice
 practise
 progress
 protozoa
+province
 prussian
 purchase
 quantity
@@ -2004,8 +2059,10 @@ scissors
 scorpion
 seahorse
 separate
+shoulder
 shouldnt
 skeleton
+somebody
 standard
 steelpan
 straight
@@ -2031,10 +2088,12 @@ wireless
 withdraw
 yourself
 adjective
+afternoon
 alligator
 aluminium
 amplitude
 andersite
+animation
 apartment
 apparatus
 architect
@@ -2061,6 +2120,7 @@ croissant
 crossaint
 cultivate
 deviation
+direction
 disappear
 elaborate
 emergency
@@ -2252,6 +2312,7 @@ hippopotamus
 jurisdiction
 mitochondria
 neighborhood
+organization
 passionfruit
 pseudosphere
 refrigerator

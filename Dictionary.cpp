@@ -73,7 +73,7 @@ int main ()
         //cin.ignore();
         getline(cin,USERinput);
 
-        if (USERinput == "/help")
+        if (USERinput == "/help" || USERinput == "/h")
         {
             cout << "/print all, /clr, /read doc, /print doc, /del" << endl;
         }
@@ -94,7 +94,7 @@ int main ()
         }
         else if (USERinput == "/read doc")
         {
-            cout << "filename ? :";
+            cout << "filename ? : ";
             string temp_fileName = "";
             getline(cin,temp_fileName);
             cout << "is ordered ? y/n :";
@@ -131,7 +131,7 @@ int main ()
         }
         else if (USERinput == "/print doc")
         {
-            cout << "filename ? :";
+            cout << "filename ? : ";
             string temp_fileName = "";
             getline(cin,temp_fileName);
 
@@ -152,9 +152,10 @@ int main ()
         else if (USERinput == "/del")
         {
             int temp_catchIndex = -1;
+            cout << "index ? : " ;
             cin >> temp_catchIndex;
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 🔥 ONLY HERE
-            if (0 < temp_catchIndex && temp_catchIndex < StringList.size())
+            if (0 <= temp_catchIndex && temp_catchIndex < StringList.size())
             {
                 StringList.erase( StringList.begin() + temp_catchIndex );
                 cout << "removed item index : " << temp_catchIndex << endl; 
@@ -163,6 +164,10 @@ int main ()
             {
                 cout << "index out of range" << endl;
             }
+        }
+        else if (USERinput.at(0) == '/')
+        {
+            cout << "unrecognized command" << endl;
         }
         else
         {
