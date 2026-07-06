@@ -45,6 +45,11 @@ function POwO_JS_ArrayRandomPickOne(inArray)
     return inArray[ Math.floor(Math.random() * inArray.length) ]
 }
 
+function POwO_JS_StringCountChar(inString, inChar)
+{
+
+}
+
 
 
 // ---- ---- ---- ---- SETUP
@@ -139,7 +144,7 @@ var GLOBAL_canvasWidthMargin = 200
 var GLOBAL_gameState = "stand by"
 var GLOBAL_Diff = 0 //0~15, each 1min30sec
 var GLOBAL_Score = 0
-var GLOBAL_Goal = [ 50, 75, 100, 100, 125, 125, 150, 200 ]
+var GLOBAL_Goal = [ 50, 75, 100, 100, 125, 125, 150, 250 ]
 var GLOBAL_HP = 50 //each character is 1HP
 var GLOBAL_Hourglass = new hOwOrglass(1000, 3000, 0)
 
@@ -152,16 +157,20 @@ const GLOBAL_Dictionary_WholeString = (await GLOBAL_Dictionary_Response.text()).
 var GLOBAL_Dictionary_Main = [ [],[],[],[], [],[],[],[], [],[],[],[], [],[],[],[] ]
 for(let i = 0 ; i < GLOBAL_Dictionary_WholeString.length ; i++)
 {
-    let temp_currentString = GLOBAL_Dictionary_WholeString[i] 
-    let temp_currentStringLength = temp_currentString.length
+    let temp_currentStringArray = GLOBAL_Dictionary_WholeString[i].split(" ")
 
-    if (0 < temp_currentStringLength && temp_currentStringLength < 16)
+    if (temp_currentStringArray.length === 1)//it is a single word, treat it as a normal word
     {
-        GLOBAL_Dictionary_Main[ temp_currentStringLength - 1 ].push( temp_currentString )
+        if (temp_currentStringArray[0].length > 0)
+        {
+            let temp_currentStringLength = temp_currentStringArray[0].length
+            GLOBAL_Dictionary_Main[ temp_currentStringLength - 1 ].push( temp_currentStringArray[0] )
+        }
     }
     else
     {
-        GLOBAL_Dictionary_Main[10].push( temp_currentString )
+        //it is a meme, go straight into index 15
+        GLOBAL_Dictionary_Main[15].push( temp_currentStringArray.join(" ") )
     }
 }
 console.log(GLOBAL_Dictionary_Main)
@@ -407,11 +416,26 @@ window.addEventListener("keydown",(event) => {
             switch (temp_userText)
             {
                 case "/play" :
-                    if (GLOBAL_gameState !== "play")
+                    if (GLOBAL_gameState === "pause")
                     {
                         GLOBAL_Interval_Run = setInterval(()=>{ POwO_Interval_Tick() },1) ;
                         GLOBAL_gameState = "play" ;
                     }
+                    else if (GLOBAL_gameState === "player win" || GLOBAL_gameState === "player lose")
+                    {
+                        //restart the game
+                        GLOBAL_PromptArray = []
+                        GLOBAL_Hourglass.cur = 0
+                        GLOBAL_Score = 0
+                        GLOBAL_Diff = 0
+                        GLOBAL_HP = 50
+                        GLOBAL_Pocket_NodeBomb = 0
+                        GLOBAL_Pocket_NodeSlow = 0
+                        GLOBAL_Pocket_TimeAdd = 0
+
+                        GLOBAL_Interval_Run = setInterval(()=>{ POwO_Interval_Tick() },1) ;
+                        GLOBAL_gameState = "play" ;
+                    }   
                 break ;
                 case "/pause" :
                     if (GLOBAL_gameState === "play")
@@ -497,9 +521,7 @@ window.addEventListener("keydown",(event) => {
                 }
             }
         }
-
         
-
 
         GLOBAL_UserTextNode.text = ""
     }
@@ -518,7 +540,7 @@ window.addEventListener("keydown",(event) => {
         
     }
 
-    if (GLOBAL_gameState === "pause" || GLOBAL_gameState === "stand by"){POwO_RedrawAll()}
+    if (GLOBAL_gameState !== "play"){POwO_RedrawAll()}
 })
 
 var GLOBAL_Interval_Run = 0
