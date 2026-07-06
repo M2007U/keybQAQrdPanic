@@ -147,7 +147,7 @@ var GLOBAL_Pocket_TimeAdd = 0
 var GLOBAL_Pocket_NodeSlow = 0
 var GLOBAL_Pocket_NodeBomb = 0
 
-const GLOBAL_Dictionary_Response = await fetch("./Dictionary-main.txt")
+const GLOBAL_Dictionary_Response = await fetch("./Dictionary-Main.txt")
 const GLOBAL_Dictionary_WholeString = (await GLOBAL_Dictionary_Response.text()).split(/\r?\n/)
 var GLOBAL_Dictionary_Main = [ [],[],[],[], [],[],[],[], [],[],[],[], [],[],[],[] ]
 for(let i = 0 ; i < GLOBAL_Dictionary_WholeString.length ; i++)
