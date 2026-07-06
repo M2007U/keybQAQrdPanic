@@ -421,7 +421,7 @@ window.addEventListener("keydown",(event) => {
                         GLOBAL_Interval_Run = setInterval(()=>{ POwO_Interval_Tick() },1) ;
                         GLOBAL_gameState = "play" ;
                     }
-                    else if (GLOBAL_gameState === "player win" || GLOBAL_gameState === "player lose")
+                    else if (GLOBAL_gameState === "stand by" || GLOBAL_gameState === "player win" || GLOBAL_gameState === "player lose")
                     {
                         //restart the game
                         GLOBAL_PromptArray = []
