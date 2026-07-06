@@ -8,7 +8,7 @@
 using namespace std;
 
 
-void POwO_vector_BinaryInsert(vector<string>& inVector , string inString)
+void POwO_vector_BinaryInsert(vector<string>& inVector , string inString , bool inUseLength)
 {
     if (inVector.size() == 0)
     {
@@ -26,11 +26,11 @@ void POwO_vector_BinaryInsert(vector<string>& inVector , string inString)
             cout << "LMR:" << PinL << "," << PinM << "," << PinR << endl;
 
             //base on lenth first
-            if (inVector[PinM].length() < inString.length())
+            if (inVector[PinM].length() < inString.length() && inUseLength)
             {
                 PinL = PinM + 1;
             }
-            else if (inString.length() < inVector[PinM].length())
+            else if (inString.length() < inVector[PinM].length() && inUseLength)
             {
                PinR = PinM ;
             }
@@ -122,7 +122,7 @@ int main ()
                 {
                     while( getline(ReaderOwO, temp_line))
                     {
-                        POwO_vector_BinaryInsert(StringList, temp_line);
+                        POwO_vector_BinaryInsert(StringList, temp_line, false);
                     }
                 }
 
@@ -171,7 +171,7 @@ int main ()
         }
         else
         {
-            POwO_vector_BinaryInsert(StringList, USERinput);
+            POwO_vector_BinaryInsert(StringList, USERinput, false);
         }
     }
     
