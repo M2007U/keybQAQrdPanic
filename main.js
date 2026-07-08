@@ -83,7 +83,7 @@ class TextNOwOde
 
     move ()
     {
-        this.posY += this.vel
+        this.posY += this.vel * GLOBAL_FrameRate_TimeDelta
     }
 
     drawMe ()
@@ -121,7 +121,7 @@ class hOwOrglass
     {
         if (this.cur > 0)
         {
-            this.cur -= 1
+            this.cur -= GLOBAL_FrameRate_TimeDelta
             return false
         }
         else
@@ -146,7 +146,7 @@ var GLOBAL_Diff = 0 //0~15, each 1min30sec
 var GLOBAL_Score = 0
 var GLOBAL_Goal = [ 50, 75, 100, 100, 125, 125, 150, 250 ]
 var GLOBAL_HP = 50 //each character is 1HP
-var GLOBAL_Hourglass = new hOwOrglass(1000, 3000, 0)
+var GLOBAL_Hourglass = new hOwOrglass(7000, 10000, 0)
 
 var GLOBAL_Pocket_TimeAdd = 0
 var GLOBAL_Pocket_NodeSlow = 0
@@ -313,8 +313,15 @@ function POwO_RedrawAll()
 
 POwO_RedrawAll()
 
+var GLOBAL_FrameRate_LastTime = 0
+var GLOBAL_FrameRate_TimeDelta = 0
+
 function POwO_Interval_Tick()
 {
+    //get time.delta
+    GLOBAL_FrameRate_TimeDelta = performance.now() - GLOBAL_FrameRate_LastTime
+    GLOBAL_FrameRate_LastTime = performance.now()
+
     //drop all prompts
     for(let i = 0 ; i < GLOBAL_PromptArray.length ; i++)
     {
@@ -359,10 +366,21 @@ function POwO_Interval_Tick()
                 temp_makeNode_PosX = POWO_Math_Lerp(GLOBAL_canvasWidthMargin, ctx.canvas.width - GLOBAL_canvasWidthMargin, Math.random() )
             }
 
-            let temp_makeNode_vel = 0;
-            if (1 <= temp_makeNode_text.length && temp_makeNode_text.length <= 4){temp_makeNode_vel = 0.4;}
-            else if (5 <= temp_makeNode_text.length && temp_makeNode_text.length <= 10){temp_makeNode_vel = 0.2;}
-            else if (11 <= temp_makeNode_text.length){temp_makeNode_vel = 0.1;}
+            /*
+            Main concept :
+            longer words = longer duration = less velocity
+
+            inspired by physics, we have :
+            ```
+            |--------------- Full Length --------------|
+            |---------> v = ? px/second
+            |---------- t = word length * konstant ----|
+            ```
+
+            so v = Full / t = Full / word length / konstant
+            */
+
+            let temp_makeNode_vel = GLOBAL_GroundLine / temp_makeNode_text.length / 5000 + 0.01 ;
 
             let temp_makeNode_effect_pool = ["","","","","","","","","","","","","","❤","⏳","🐌","💥"]
             //❤ = HP add, ⏳ = time add duration, 🐌 = slow nodes, 💥 = destroy 5 nodes
@@ -418,6 +436,7 @@ window.addEventListener("keydown",(event) => {
                 case "/play" :
                     if (GLOBAL_gameState === "pause")
                     {
+                        GLOBAL_FrameRate_LastTime = performance.now()
                         GLOBAL_Interval_Run = setInterval(()=>{ POwO_Interval_Tick() },1) ;
                         GLOBAL_gameState = "play" ;
                     }
@@ -433,6 +452,7 @@ window.addEventListener("keydown",(event) => {
                         GLOBAL_Pocket_NodeSlow = 0
                         GLOBAL_Pocket_TimeAdd = 0
 
+                        GLOBAL_FrameRate_LastTime = performance.now()
                         GLOBAL_Interval_Run = setInterval(()=>{ POwO_Interval_Tick() },1) ;
                         GLOBAL_gameState = "play" ;
                     }   
