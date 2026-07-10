@@ -1,0 +1,13 @@
+cylinder
+prism
+cube
+cuboid 
+cone
+tetrahedron
+pyramid 
+sphere
+torus
+pseudoshphere
+octahedron
+dodecahedron
+icosahedron
