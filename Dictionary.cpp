@@ -7,6 +7,55 @@
 
 using namespace std;
 
+int POwO_vector_BinarySearch(vector<string>& inVector , string inString, bool inUseLength)
+{
+    //will return -1 if string does not exist, else will return index
+
+    if (inVector.size() == 0)
+    {
+        return -1;
+    }
+    else
+    {
+        int PinL = 0;
+        int PinR = (int)inVector.size();
+
+        while (PinL < PinR)
+        {
+            int PinM = PinL + (PinR - PinL) / 2;
+            cout << "LMR:" << PinL << "," << PinM << "," << PinR << endl;
+
+            //base on lenth first
+            if (inVector[PinM].length() < inString.length() && inUseLength)
+            {
+                PinL = PinM + 1;
+            }
+            else if (inString.length() < inVector[PinM].length() && inUseLength)
+            {
+               PinR = PinM ;
+            }
+            else if (inVector[PinM] < inString) //then string
+            {
+                PinL = PinM + 1;
+            }
+            else if (inString < inVector[PinM])
+            {
+                PinR = PinM;
+            }
+            else if (inVector[PinM].length() == inString.length() && inVector[PinM] == inString)
+            {
+                //found match
+                PinL = PinM;
+                PinR = PinM;
+                return PinM;
+            }
+        }
+
+        return -1; //if the flow managed to reach here, this mean that the text does not exist
+        
+    }
+      
+}
 
 void POwO_vector_BinaryInsert(vector<string>& inVector , string inString , bool inUseLength)
 {
@@ -75,7 +124,7 @@ int main ()
 
         if (USERinput == "/help" || USERinput == "/h")
         {
-            cout << "/print all, /clr, /read doc, /print doc, /del" << endl;
+            cout << "/print all, /clr, /read doc, /print doc, /search, /del" << endl;
         }
         else if (USERinput == "/print all")
         {
@@ -148,6 +197,14 @@ int main ()
                 }
             }
             WriterOwO.close();
+        }
+        else if (USERinput == "/search")
+        {
+            string temp_SearchString = "";
+            cout << "search string ? : ";
+            getline(cin, temp_SearchString);
+
+            cout << "searched index : " << POwO_vector_BinarySearch(StringList, temp_SearchString, false) << endl;
         }
         else if (USERinput == "/del")
         {
