@@ -153,7 +153,7 @@ var GLOBAL_Pocket_NodeSlow = 0
 var GLOBAL_Pocket_NodeBomb = 0
 
 const GLOBAL_Dictionary_Response = await fetch("./Dictionary-Main.txt")
-const GLOBAL_Dictionary_WholeString = (await GLOBAL_Dictionary_Response.text()).split(/\r?\n/)
+const GLOBAL_Dictionary_WholeString = (await GLOBAL_Dictionary_Response.text()).split(/\r?\n/) //split by new line
 var GLOBAL_Dictionary_Main = [ [],[],[],[], [],[],[],[], [],[],[],[], [],[],[],[] ]
 for(let i = 0 ; i < GLOBAL_Dictionary_WholeString.length ; i++)
 {
@@ -164,7 +164,17 @@ for(let i = 0 ; i < GLOBAL_Dictionary_WholeString.length ; i++)
         if (temp_currentStringArray[0].length > 0)
         {
             let temp_currentStringLength = temp_currentStringArray[0].length
-            GLOBAL_Dictionary_Main[ temp_currentStringLength - 1 ].push( temp_currentStringArray[0] )
+
+            if (temp_currentStringLength < 16)
+            {
+                GLOBAL_Dictionary_Main[ temp_currentStringLength - 1 ].push( temp_currentStringArray[0] )
+            }
+            else
+            {
+                //if a word is too long
+                //go straight to the last one
+                GLOBAL_Dictionary_Main[15].push( temp_currentStringArray[0] )
+            }
         }
     }
     else
